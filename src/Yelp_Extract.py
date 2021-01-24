@@ -3,6 +3,7 @@ import requests
 import sys
 import urllib
 import pymongo
+from pymongo import MongoClient
 
 # The following information is needed to access to access the Yelp Fusion API
 # The URL contains the specific endpoint used for the project, Business Search
@@ -32,6 +33,19 @@ for city in cities:
         req = requests.get(url, params=params, headers=headers)
         print('The status code is {}'.format(req.status_code))
         json_responses.append(json.loads(req.text))
-print(json_responses)
+# print(json_responses)
 
+client = MongoClient()
+db = client['yelp']
+collection = db['review_scores']
+for response in json_responses:
+    for business in response['businesses']:
+        entry = {'city': business['location']['city'],
+                 'name': business['name'],
+                 'price': business['price'],
+                 'rating': business['rating'],
+                 'review count': business['review_count'],
+                 '_id': business['id']}
+        post_id = collection.insert_one(entry).inserted_id
+        #print(post_id)
 
