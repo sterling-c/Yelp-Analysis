@@ -35,9 +35,18 @@ for city in cities:
         json_responses.append(json.loads(req.text))
 # print(json_responses)
 
+# Creates client for MongoDB Server
+# There are no arguments passed because the server is hosted locally
 client = MongoClient()
+
+# The following retrieves the designated database, then the collection
 db = client['yelp']
 collection = db['review_scores']
+
+# The JSON responses are now python dictionaries stored in a list
+# This is a nested loop going through each response in the list.
+# For every response, we cycle through every business listed and retrieve the the necessary information
+# The data is put into a dictionary, which is necessary to insert as a document into the collection
 for response in json_responses:
     for business in response['businesses']:
         entry = {'city': business['location']['city'],
